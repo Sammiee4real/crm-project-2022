@@ -27,7 +27,7 @@ class StoreProjectRequest extends FormRequest
             'title' => 'required|string|unique:tasks',
             'description' =>'required|string',
             'deadline'=>'required|date',
-            'status'=>'required|string',
+            'project_image'=>'required|image|mimes:jpeg,png,jpg|max:2048', 
             'user_id'=>'required',
             'client_id'=>'required'
         ];

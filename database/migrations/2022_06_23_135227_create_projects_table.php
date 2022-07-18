@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->foreignId('client_id')->constrained();
             $table->string('status')->default('open');
+            // $table->string('project_image');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -33,6 +33,7 @@ class ProjectFactory extends Factory
             'deadline' => $this->faker->dateTimeBetween('+1 month', '+6 month'),
             'user_id' => $users->random(),
             'client_id' => $clients->random(),
+            // 'project_image' => 'default.png',
             'status' => Arr::random(Project::STATUS),   
         ];
     }

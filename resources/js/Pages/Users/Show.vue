@@ -40,9 +40,11 @@
 import BreezeAuthenticatedLayout from '@/Layouts/Authenticated.vue';
 import { Head, Link } from '@inertiajs/inertia-vue3';
 import Pagination  from '@/Components/Paginate.vue';
+
 defineProps({
     clients: Object,
 })
+
 // export default{
 //     components: {
 //       Head,

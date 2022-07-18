@@ -57,6 +57,16 @@ class User extends Authenticatable
 
     public const ROLE = ['user','admin']; 
 
+    public function getPermissionsAttribute()
+    {
+        return [
+            'manage_clients' => $this->role == 'admin',
+            'manage_tasks' => $this->role == 'admin',
+            'manage_projects' => $this->role == 'admin',
+            'manage_users' =>  $this->role == 'admin',     
+        ];
+    }
+
     public function projects()
     {
         return $this->hasMany(Project::class);

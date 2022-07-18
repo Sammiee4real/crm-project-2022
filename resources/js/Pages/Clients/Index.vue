@@ -4,7 +4,7 @@
     <BreezeAuthenticatedLayout>
         <template #header>
             <h2 class="flex justify-between items-center font-semibold text-sm text-gray-800 leading-tight">
-                <div class="text-xl">All Clients  &nbsp; <span class="text-sm">Total Record: {{total_clients}}</span> </div> <span><Link :href="route('clients.create')" as="button" class="bg-indigo-800 p-2 rounded-xl text-white">Create Client</Link></span>
+                <div class="text-xl">All Clients  &nbsp; <span class="text-sm">Total Record: {{total_clients}}</span> </div> <span v-if="permissions.manage_clients"><Link :href="route('clients.create')" as="button" class="bg-indigo-800 p-2 rounded-xl text-white">Create Client</Link></span>
             </h2>
         </template>
 
@@ -52,7 +52,7 @@
                         <th class="px-6 py-4">
 							Project(s)
 						</th>
-						<th class="px-6 py-4 text-right">
+						<th v-if="permissions.manage_clients"  class="px-6 py-4 text-right">
 							Action
 						</th>
 					</tr>
@@ -89,7 +89,7 @@
                             
 
                         </td>
-						<td class="px-6 py-4 text-right flex items-center justify-center space-x-2">
+						<td  v-if="permissions.manage_clients"  class="px-6 py-4 text-right flex items-center justify-center space-x-2">
 						  <Link as="button" :href="route('clients.edit',client.id)" class="bg-blue-500 rounded px-2 text-white">Edit</Link>
 						  <button @click="destroy(client.id)"  class="bg-red-500 rounded px-2 text-white">Delete</button>
 						</td>
@@ -120,6 +120,7 @@ let props = defineProps({
     clients: Object,
 	total_clients: String,
     filters: Object,
+	permissions: Object,
 })
 
 let search = ref(props.filters.search); 

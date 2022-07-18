@@ -4,7 +4,7 @@
     <BreezeAuthenticatedLayout>
         <template #header>
             <h2 class="flex justify-between items-center font-semibold text-sm text-gray-800 leading-tight">
-                <div class="text-xl">All projects  &nbsp; <span class="text-sm">Total Record: {{total_projects}}</span> </div> <span><Link :href="route('projects.create')" as="button" class="bg-indigo-800 p-2 rounded-xl text-white">Create project</Link></span>
+                <div class="text-xl">All projects  &nbsp; <span class="text-sm">Total Record: {{total_projects}}</span> </div> <span v-if="permissions.manage_projects"><Link :href="route('projects.create')" as="button" class="bg-indigo-800 p-2 rounded-xl text-white">Create project</Link></span>
             </h2>
         </template>
 
@@ -54,13 +54,13 @@
 						</th>
 						
 						 <th class="px-6 py-4">
-							Task(s)
+							Task(s) and Completion Status
 						</th>
 
 						<th class="px-6 py-4 text-right">
 							Status
 						</th>
-                        <th class="px-6 py-4 text-right">
+                        <th v-if="permissions.manage_projects" class="px-6 py-4 text-right">
                         </th>
 					</tr>
 				</thead>
@@ -78,6 +78,9 @@
                         
                         <td class="px-6 py-4">
 							{{ project.title }}
+						    <!-- {{ project.image_path }} -->
+
+						    <img width="80" height="80" :src="project.image_path" alt="" />
 						</td>
 
 						<td class="px-6 py-4">
@@ -100,7 +103,7 @@
 						<td class="px-6 py-4">
                             <!-- fix later -->
 							
-                            <span v-if="project.tasks.length>0">{{project.tasks.length}} Task(s):<br></span>
+                            <span v-if="project.tasks.length>0">{{project.tasks.length}} Task(s): &nbsp; {{ project.percentage_completion }} completed<br></span>
                             <span v-else>No Task<br></span>
                             <li v-for="task in project.tasks"  :key="task.id" v-html="'-'+task.title"></li>
                             
@@ -111,7 +114,7 @@
 							{{ project.status }}
 						</td>
                       
-						<td class="px-6 py-4 text-right flex items-center justify-center space-x-2">
+						<td v-if="permissions.manage_projects" class="px-6 py-4 text-right flex items-center justify-center space-x-2">
 						  <Link as="button" :href="route('projects.edit',project.id)" class="bg-blue-500 rounded px-2 text-white">Edit</Link>
 						  <button @click="destroy(project.id)"  class="bg-red-500 rounded px-2 text-white">Delete</button>
 						</td>
@@ -142,6 +145,7 @@ let props = defineProps({
     projects: Object,
 	total_projects: String,
     filters: Object,
+	permissions:Object,
 })
 
 let search = ref(props.filters.search); 

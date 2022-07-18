@@ -4,7 +4,7 @@
     <BreezeAuthenticatedLayout>
         <template #header>
             <h2 class="flex justify-between items-center font-semibold text-sm text-gray-800 leading-tight">
-                <div class="text-xl">All Tasks  &nbsp; <span class="text-sm">Total Record: {{total_tasks}}</span> </div> <span><Link :href="route('tasks.create')" as="button" class="bg-indigo-800 p-2 rounded-xl text-white">Create Task</Link></span>
+                <div class="text-xl">All Tasks  &nbsp; <span class="text-sm">Total Record: {{total_tasks}}</span> </div> <span v-if="permissions.manage_tasks"><Link :href="route('tasks.create')" as="button" class="bg-indigo-800 p-2 rounded-xl text-white">Create Task</Link></span>
             </h2>
         </template>
 
@@ -52,7 +52,7 @@
 						<th class="px-6 py-4 text-right">
 							Status
 						</th>
-                        <th class="px-6 py-4 text-right">
+                        <th v-if="permissions.manage_tasks" class="px-6 py-4 text-right">
                         </th>
 					</tr>
 				</thead>
@@ -90,9 +90,9 @@
 							{{ task.status }}
 						</td>
                       
-						<td class="px-6 py-4 text-right flex items-center justify-center space-x-2">
-						  <Link as="button" :href="route('tasks.edit',task.id)" class="bg-blue-500 rounded px-2 text-white">Edit</Link>
-						  <button @click="destroy(task.id)"  class="bg-red-500 rounded px-2 text-white">Delete</button>
+						<td v-if="permissions.manage_tasks" class="px-6 py-4 text-right flex items-center justify-center space-x-2">
+						  <Link  as="button" :href="route('tasks.edit',task.id)" class="bg-blue-500 rounded px-2 text-white">Edit</Link>
+						  <button  @click="destroy(task.id)"  class="bg-red-500 rounded px-2 text-white">Delete</button>
 						</td>
 					</tr>
 					
@@ -121,6 +121,7 @@ let props = defineProps({
     tasks: Object,
 	total_tasks: String,
     filters: Object,
+	permissions: Object,
 })
 
 let search = ref(props.filters.search); 

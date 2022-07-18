@@ -41,7 +41,7 @@
                          <div class="col-span-6 sm:col-span-12">
                             <span>Current Project: <strong>{{current_project.title}}</strong> </span>
                             <BreezeLabel for="project" value="Change Project" />
-                            <select class="mt-1 block w-full" v-model="form.project_id" id="project_id">
+                            <select required class="mt-1 block w-full" v-model="form.project_id" id="project_id">
                                     <option selected  value="{{current_project.id}}">{{current_project.title}}</option>
                                     <option v-for="project in projects" :key="project.id">{{project.title}}</option>
                             </select>
@@ -88,7 +88,7 @@ export default{
    props:{
      task: Object,
      projects: Object,
-     current_project:Object
+     current_project: Object
    },
    components:{
         BreezeButton,
@@ -107,11 +107,7 @@ export default{
         // status:props.task.status,
         project_id: props.task.project
        });
-
-        // const submit = () => {
-        //     form.put(route('tasks.update',task.id));
-        // };
-
+       
         return {form}  
         
    }

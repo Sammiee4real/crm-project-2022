@@ -1,11 +1,10 @@
 <?php
-    namespace App\Service;
-    // use App\Services\ModelsService;
+namespace App\Service;
 
-    class modelsService {
-        public function getIDFromTitle($titleField,$titleValue,$modelClass)
-        {
-            return $modelClass::where($titleField,$titleValue)->first()->id;
-        }
+class ModelsService {
+    public function getIDFromTitle($titleField,$titleValue,$modelClass)
+    {
+        return $modelClass::where($titleField,$titleValue)->first()->id;
     }
+}
 ?>

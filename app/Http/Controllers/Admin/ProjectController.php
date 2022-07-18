@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
+
 use App\Models\Task;
+use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Client;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use App\Service\ModelsService;
 use App\Http\Controllers\Controller;
+use App\Service\TaskCompletionService;
 use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 
 class ProjectController extends Controller
 {
@@ -31,6 +37,8 @@ class ProjectController extends Controller
             'description' => $project->description,
             'deadline' => $project->deadline,
             'status' => $project->status,
+            'image_path' => $project->getFirstMediaUrl('media','thumb'),    
+            'percentage_completion' => (new TaskCompletionService())->completedTasksPerProjectPercentage($project->id).'%',
             'client' => Project::find($project->id)->client,
             'user' => Project::find($project->id)->user,  
             'tasks' => Task::where('project_id',$project->id)->get(),  
@@ -50,7 +58,9 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Projects/Create');
+        $clients = Client::all();
+        $users = User::all();
+        return Inertia::render('Projects/Create',compact('clients','users'));
     }
 
     /**
@@ -61,7 +71,20 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
-        Project::create($request->validated());
+        // dd($request->hasFile('project_image'));
+        $data = [
+            'title' => $request->title,
+            'description' => $request->description,
+            'deadline' => $request->deadline,
+            'user_id' => User::where('first_name',explode('-',$request->user_id)[0])->where('last_name',explode('-',$request->user_id)[1])->first()->id, //not the best approach
+            'client_id' => (new ModelsService())->getIDFromTitle('contact_email',$request->client_id,Client::class) //maybe not the best approach           
+        ];
+
+        $project = Project::create($data);
+        
+        //spatie media library
+        $project->addMediaFromRequest('project_image')->toMediaCollection('media','project_files');
+     
         return redirect()->route('projects.index')->with('message','Project with title: '.$request->title.' was successfully created');
         
     }
@@ -74,8 +97,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return Inertia::render('Projects/Show',compact('project'));
-        
+        return Inertia::render('Projects/Show',compact('project'));   
     }
 
     /**
@@ -86,7 +108,11 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        return Inertia::render('Projects/Edit',compact('project'));
+        $clients = Client::all();
+        $current_client = $project->client;
+        $users = User::all();
+        $current_user = $project->user;
+        return Inertia::render('Projects/Edit',compact('project','current_client','clients','users','current_user'));
         
     }
 
@@ -95,13 +121,30 @@ class ProjectController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Project  $project
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response   UpdateProjectRequest
      */
-    public function update(Request $request, Project $project)
+    public function update(StoreProjectRequest $request, Project $project)
     {
-        Project::where('id',$project->id)->update($request->validated());
-        return redirect()->route('projects.index')->with('message','Project record was successfully updated');
+        dd($request->hasFile('project_image'));
 
+        $data = [
+            'title' => $request->title,
+            'description' => $request->description,
+            'deadline' => $request->deadline,
+            // 'user_id' => User::where('first_name',explode('-',$request->user_id)[0])->where('last_name',explode('-',$request->user_id)[1])->first()->id, //not the best approach
+            // 'client_id' => (new ModelsService())->getIDFromTitle('contact_email',$request->client_id,Client::class) //maybe not the best approach           
+        ];
+        Project::where('id',$project->id)->update($data);
+
+        //delete associated files first
+        // $project->delete();
+
+        //spatie media library
+        $project->addMediaFromRequest('project_image')->toMediaCollection('media','project_files');
+        // $project->addMediaFromRequest('project_image')->toMediaCollection('media','project_files');
+
+        return redirect()->route('projects.index')->with('message','Project with title: '.$request->title.' was successfully updated');
+        
     }
 
     /**

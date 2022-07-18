@@ -42,6 +42,13 @@ class HandleInertiaRequests extends Middleware
                 // 'message' => fn () => $request->session()->get('message')
                 'message' => session('message')
             ],
+            'permissions' =>[
+                'manage_clients' => auth()->check() ? auth()->user()->role == 'admin' : false,
+                'manage_tasks' =>  auth()->check() ? auth()->user()->role == 'admin' : false,
+                'manage_projects' =>  auth()->check() ? auth()->user()->role == 'admin' : false,
+                'manage_users' =>  auth()->check() ? auth()->user()->role == 'admin' : false,
+               
+            ],
             'ziggy' => function () {
                 return (new Ziggy)->toArray();
             },

@@ -29,12 +29,6 @@ class UpdateUserRequest extends FormRequest
             'last_name'=>'required|string',
             'email'=>'required|email',
             'phone_number'=>'required',
-            // 'password'=> Password::min(8)
-            //                 ->letters()
-            //                 ->mixedCase()
-            //                 ->numbers()
-            //                 ->symbols()
-            //                 ->uncompromised(),
             'address'=>'required',
             'role' =>'required'
         ];

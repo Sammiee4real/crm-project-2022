@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-// use App\Services\ModelsService;
-use modelsService;
+
 use App\Models\Task;
 use Inertia\Inertia;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTaskRequest;
+use App\Service\modelsService;
 use App\Http\Requests\UpdateTaskRequest;
 
 class TaskController extends Controller
@@ -52,8 +52,8 @@ class TaskController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Tasks/Create');
-
+        $projects = Project::all();
+        return Inertia::render('Tasks/Create',compact('projects'));
     }
 
     /**
@@ -64,9 +64,15 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        Task::create($request->validated());
+        $this->authorize('create',Task::class);
+        $data = [
+            'title' => $request->title,
+            'description' => $request->description,
+            'deadline' => $request->deadline,
+            'project_id' => (new modelsService())->getIDFromTitle('title',$request->project_id,Project::class) //maybe not the best approach
+        ];
+        Task::create($data);
         return redirect()->route('tasks.index')->with('message','Task with title: '.$request->title.' was successfully created');
-        
     }
 
     /**
@@ -88,9 +94,9 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
+        $this->authorize('create',Task::class);
         $projects = Project::all();
         $current_project = Task::find($task->id)->project;
-        // dd($projects);
         return Inertia::render('Tasks/Edit',compact('task','projects','current_project'));
     }
 
@@ -103,18 +109,15 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {   
-        // dd(  (new modelsService())->getIDFromTitle('title',$request->project_id,'Project'));
-        // dd(Project::where('title',$request->project_id)->first()->id);
+        $this->authorize('create',Task::class);
         $data = [
             'title' => $request->title,
             'description' => $request->description,
             'deadline' => $request->deadline,
-            'project_id' => Project::where('title',$request->project_id)->first()->id //not the best approach
+            'project_id' => (new modelsService())->getIDFromTitle('title',$request->project_id,Project::class) //maybe not the best approach
         ];
-
         Task::where('id',$task->id)->update($data);
         return redirect()->route('tasks.index')->with('message','Task was successfully updated');
-
     }
 
     /**
@@ -125,8 +128,8 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
+        $this->authorize('create',Task::class);
         $task->delete();
         return redirect()->route('tasks.index')->with('message','Task was successfully deleted');
-
     }
 }

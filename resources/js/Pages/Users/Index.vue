@@ -55,7 +55,7 @@
                         <th class="px-6 py-4">
 							Project(s)
 						</th>
-						<th class="px-6 py-4 text-right">
+						<th  v-if="permissions.manage_users"  class="px-6 py-4 text-right">
 							Action
 						</th>
 					</tr>
@@ -92,7 +92,7 @@
                             
 
                         </td>
-						<td class="px-6 py-4 text-right flex items-center justify-center space-x-2">
+						<td  v-if="permissions.manage_users"  class="px-6 py-4 text-right flex items-center justify-center space-x-2">
 						  <Link as="button" :href="route('users.edit',user.id)" class="bg-blue-500 rounded px-2 text-white">Edit</Link>
 						  <button @click="destroy(user.id)"  class="bg-red-500 rounded px-2 text-white">Delete</button>
 						</td>
@@ -123,6 +123,7 @@ let props = defineProps({
     users: Object,
 	total_users: String,
     filters: Object,
+	permissions:Object,
 })
 
 let search = ref(props.filters.search); 
